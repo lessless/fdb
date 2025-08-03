@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 set +e
+
+# Activate virtual environment if it exists
+if [ -d ".venv" ]; then
+    source .venv/bin/activate
+fi
+
 for round in {1..10}
 do
     echo "Round $round"

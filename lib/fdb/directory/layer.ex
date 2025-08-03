@@ -118,7 +118,7 @@ defmodule FDB.Directory.Layer do
     end
 
     if options[:prefix] && !directory.allow_manual_prefixes do
-      if directory.path.length == 0 do
+      if length(directory.path) == 0 do
         raise ArgumentError, "Cannot specify a prefix unless manual prefixes are enabled."
       else
         raise ArgumentError, "Cannot specify a prefix in a partition."
