@@ -110,7 +110,7 @@ defmodule TestUtils do
 
             e in [ErlangError] ->
               if !Map.has_key?(e, :original) do
-                reraise e, System.stacktrace()
+                reraise e, __STACKTRACE__
               end
 
               :ok
