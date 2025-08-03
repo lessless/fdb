@@ -17,6 +17,7 @@ endif
 
 ifeq ($(shell uname),Darwin)
 	LDFLAGS += -dynamiclib -undefined dynamic_lookup
+	LDFLAGS += -rpath /usr/local/lib
 endif
 
 LDFLAGS += -lfdb_c
@@ -51,4 +52,3 @@ install-foundationdb-pip:
 
 run-bindings-test:
 	./test/loop.sh
-

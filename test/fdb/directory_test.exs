@@ -47,9 +47,7 @@ defmodule FDB.DirectoryTest do
           Subspace.new(<<0xFE>>),
           Subspace.new({<<0xFE>>, ByteString.new()}, Identity.new())
         )
-        |> Subspace.concat(
-          Subspace.new({"hca", ByteString.new()}, Tuple.new({Integer.new(), Integer.new()}))
-        )
+        |> Subspace.concat(Subspace.new({"hca", ByteString.new()}, Tuple.new({Integer.new(), Integer.new()})))
 
       count_coder =
         Transaction.Coder.new(

@@ -423,9 +423,7 @@ defmodule FDBTest do
 
   test "versionstamped key" do
     coder =
-      FDB.Transaction.Coder.new(
-        Coder.Tuple.new({Coder.ByteString.new(), Coder.Versionstamp.new()})
-      )
+      FDB.Transaction.Coder.new(Coder.Tuple.new({Coder.ByteString.new(), Coder.Versionstamp.new()}))
 
     db =
       new_database()

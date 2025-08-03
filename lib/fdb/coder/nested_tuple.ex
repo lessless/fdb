@@ -25,11 +25,11 @@ defmodule FDB.Coder.NestedTuple do
       Enum.reduce(coders, {{}, rest}, fn
         coder, {values, @null <> _rest = full} ->
           {nil, @null_suffix <> rest} = coder.module.decode(full, coder.opts)
-          {Tuple.append(values, nil), rest}
+          {Tuple.insert_at(values, tuple_size(values), nil), rest}
 
         coder, {values, rest} ->
           {elem, rest} = coder.module.decode(rest, coder.opts)
-          {Tuple.append(values, elem), rest}
+          {Tuple.insert_at(values, tuple_size(values), elem), rest}
       end)
 
     {value, rest}

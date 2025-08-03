@@ -113,9 +113,7 @@ defmodule FDB.Machine do
     [{:unicode_string, op} | rest] = Tuple.to_list(instruction)
 
     if s.debug do
-      IO.puts(
-        "#{String.pad_leading(to_string(id), 5)} #{String.pad_trailing(op, 20)} #{inspect(rest)}"
-      )
+      IO.puts("#{String.pad_leading(to_string(id), 5)} #{String.pad_trailing(op, 20)} #{inspect(rest)}")
     end
 
     {op, snapshot} =
@@ -470,10 +468,9 @@ defmodule FDB.Machine do
   end
 
   def do_execute(id, {"GET_RANGE_SELECTOR"}, s) do
-    {{:byte_string, begin_key}, {:integer, begin_or_equal}, {:integer, begin_offset},
-     {:byte_string, end_key}, {:integer, end_or_equal}, {:integer, end_offset}, {:integer, limit},
-     {:integer, reverse}, {:integer, streaming_mode}, {:byte_string, prefix},
-     stack} = pop(s.stack, 10)
+    {{:byte_string, begin_key}, {:integer, begin_or_equal}, {:integer, begin_offset}, {:byte_string, end_key},
+     {:integer, end_or_equal}, {:integer, end_offset}, {:integer, limit}, {:integer, reverse},
+     {:integer, streaming_mode}, {:byte_string, prefix}, stack} = pop(s.stack, 10)
 
     result =
       rescue_error(fn ->
@@ -527,8 +524,8 @@ defmodule FDB.Machine do
   end
 
   def do_execute(id, {"GET_RANGE_STARTS_WITH"}, s) do
-    {{:byte_string, prefix}, {:integer, limit}, {:integer, reverse}, {:integer, streaming_mode},
-     stack} = pop(s.stack, 4)
+    {{:byte_string, prefix}, {:integer, limit}, {:integer, reverse}, {:integer, streaming_mode}, stack} =
+      pop(s.stack, 4)
 
     result =
       rescue_error(fn ->
@@ -568,7 +565,7 @@ defmodule FDB.Machine do
           )
           |> Enum.to_list()
 
-        unless Enum.empty?(result) do
+        if !Enum.empty?(result) do
           # raise error with code 1020
           FDB.Utils.verify_ok(1020)
         end

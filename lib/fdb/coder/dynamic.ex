@@ -68,7 +68,7 @@ defmodule FDB.Coder.Dynamic do
   end
 
   defp do_decode(<<0x00>> <> rest, _coders, acc),
-    do: {Tuple.append(acc, {nil, nil}), rest}
+    do: {Tuple.insert_at(acc, tuple_size(acc), {nil, nil}), rest}
 
   defp do_decode(<<0x01>> <> _rest = full, coders, acc),
     do: apply_coder(:byte_string, full, coders, acc)
@@ -90,7 +90,7 @@ defmodule FDB.Coder.Dynamic do
 
   defp do_decode(<<0x05>> <> rest, coders, acc) do
     {value, rest} = do_decode_nested_tuple(rest, coders, {})
-    {Tuple.append(acc, {:nested, value}), rest}
+    {Tuple.insert_at(acc, tuple_size(acc), {:nested, value}), rest}
   end
 
   defp do_decode(<<x::integer-size(8), _rest::binary>> = full, coders, acc) when x in 0x0C..0x1C,
@@ -106,7 +106,7 @@ defmodule FDB.Coder.Dynamic do
 
   defp apply_coder(c, rest, coders, acc) do
     {value, rest} = coders[c].module.decode(rest, coders[c].opts)
-    {Tuple.append(acc, {c, value}), rest}
+    {Tuple.insert_at(acc, tuple_size(acc), {c, value}), rest}
   end
 
   defp do_decode_nested_tuple(<<0x00, 0xFF>> <> _rest = full, coders, values) do

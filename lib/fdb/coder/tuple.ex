@@ -22,7 +22,7 @@ defmodule FDB.Coder.Tuple do
   def decode(rest, coders) do
     Enum.reduce(coders, {{}, rest}, fn coder, {values, rest} ->
       {elem, rest} = coder.module.decode(rest, coder.opts)
-      {Tuple.append(values, elem), rest}
+      {Tuple.insert_at(values, tuple_size(values), elem), rest}
     end)
   end
 

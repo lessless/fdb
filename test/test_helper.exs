@@ -109,7 +109,7 @@ defmodule TestUtils do
               :ok
 
             e in [ErlangError] ->
-              unless Map.has_key?(e, :original) do
+              if !Map.has_key?(e, :original) do
                 reraise e, System.stacktrace()
               end
 

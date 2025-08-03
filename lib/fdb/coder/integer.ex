@@ -5,7 +5,7 @@ defmodule FDB.Coder.Integer do
   `FDB.Coder.ArbitraryInteger` for arbitrary precision numbers.
   """
   use FDB.Coder.Behaviour
-  use Bitwise
+  import Bitwise
 
   @spec new() :: FDB.Coder.t()
   def new do

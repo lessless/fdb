@@ -6,7 +6,7 @@ defmodule FDB.Native do
   @app Mix.Project.config()[:app]
 
   def init do
-    path = :filename.join(:code.priv_dir(@app), 'fdb_nif')
+    path = :filename.join(:code.priv_dir(@app), ~c"fdb_nif")
     :ok = :erlang.load_nif(path, 0)
   end
 

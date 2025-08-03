@@ -104,8 +104,7 @@ defmodule FDB.CoderTest do
         {constant(Coder.Float.new(32)), many(float32())},
         {constant(Coder.Float.new(64)), many(float())},
         {constant(Coder.Integer.new()), many(integer(-0xFFFFFFFFFFFFFFFF..0xFFFFFFFFFFFFFFFF))},
-        {constant(Coder.Versionstamp.new()),
-         many(map(binary(length: 12), &FDB.Versionstamp.new(&1)))}
+        {constant(Coder.Versionstamp.new()), many(map(binary(length: 12), &FDB.Versionstamp.new(&1)))}
       ])
 
     tree(leaves, fn leaf ->
@@ -165,8 +164,7 @@ defmodule FDB.CoderTest do
           {Coder.NestedTuple.new(coders), values}
         end),
         bind(leaf, fn {coder, values} ->
-          {constant(Coder.Nullable.new(coder)),
-           list_of(one_of([nil, member_of([nil] ++ values)]))}
+          {constant(Coder.Nullable.new(coder)), list_of(one_of([nil, member_of([nil] ++ values)]))}
         end)
       ])
     end)

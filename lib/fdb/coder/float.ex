@@ -4,7 +4,7 @@ defmodule FDB.Coder.Float do
   a two element tuple. {:inf | :"-inf" | :NaN, binary}
   """
   use FDB.Coder.Behaviour
-  use Bitwise
+  import Bitwise
 
   @spec new(32 | 64) :: FDB.Coder.t()
   def new(bits \\ 32) when bits == 32 or bits == 64 do

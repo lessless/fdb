@@ -1,6 +1,6 @@
 defmodule FDB.Coder.ArbitraryInteger do
   use FDB.Coder.Behaviour
-  use Bitwise
+  import Bitwise
 
   @spec new() :: FDB.Coder.t()
   def new do

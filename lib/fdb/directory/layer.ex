@@ -79,9 +79,7 @@ defmodule FDB.Directory.Layer do
           node_subspace,
           Subspace.new({root_node.prefix, ByteString.new()}, Identity.new())
         )
-        |> Subspace.concat(
-          Subspace.new({"hca", ByteString.new()}, Tuple.new({Integer.new(), Integer.new()}))
-        ),
+        |> Subspace.concat(Subspace.new({"hca", ByteString.new()}, Tuple.new({Integer.new(), Integer.new()}))),
         LittleEndianInteger.new(64)
       )
 
@@ -178,15 +176,15 @@ defmodule FDB.Directory.Layer do
             directory.content_subspace.opts.prefix <>
               HighContentionAllocator.allocate(directory, tr)
 
-          unless Transaction.get_range_stream(tr, KeySelectorRange.starts_with(prefix), %{
-                   limit: 1
-                 })
-                 |> Enum.empty?() do
+          if !(Transaction.get_range_stream(tr, KeySelectorRange.starts_with(prefix), %{
+                 limit: 1
+               })
+               |> Enum.empty?()) do
             raise ArgumentError,
                   "The database has keys stored at the prefix chosen by the automatic prefix allocator: #{inspect(prefix)}."
           end
 
-          unless prefix_free?(directory, tr, prefix) do
+          if !prefix_free?(directory, tr, prefix) do
             raise ArgumentError,
                   "The directory layer has manually allocated prefixes that conflict with the automatic prefix allocator."
           end
@@ -446,7 +444,7 @@ defimpl FDB.Directory.Protocol, for: FDB.Directory.Layer do
     old_node = Node.prefetch_metadata(Layer.find(directory, tr, old_path), tr)
     new_node = Node.prefetch_metadata(Layer.find(directory, tr, new_path), tr)
 
-    unless Node.exists?(old_node) do
+    if !Node.exists?(old_node) do
       raise ArgumentError, "The source directory does not exist."
     end
 
