@@ -6,7 +6,7 @@ CFLAGS += -Ic_src
 CFLAGS += -std=gnu99
 CFLAGS += -fPIC
 
-FDB_VERSION = 7.1.5
+FDB_VERSION = 7.3.69
 
 LDFLAGS += -L/usr/local/lib/ -L/usr/lib/
 
@@ -23,6 +23,18 @@ endif
 LDFLAGS += -lfdb_c
 
 LIB_NAME = priv/fdb_nif.so
+
+# Check if we're in a uv environment by looking for .venv directory or uv.lock
+ifneq ("$(wildcard .venv)","")
+    PYTHON_SITE_PATH := $(shell uv run python -c 'import site; print(site.getsitepackages()[0])' 2>/dev/null || python3 -m site --user-site)
+    PIP_INSTALL := uv pip install
+else ifdef VIRTUAL_ENV
+    PYTHON_SITE_PATH := $(shell python3 -c 'import site; print(site.getsitepackages()[0])')
+    PIP_INSTALL := pip3 install -Iv
+else
+    PYTHON_SITE_PATH := $(shell python3 -m site --user-site)
+    PIP_INSTALL := pip3 install --user -Iv
+endif
 
 all: $(LIB_NAME)
 
@@ -44,11 +56,11 @@ fetch-foundation-source:
 	tar -xf foundation.tar.gz
 	rm foundation.tar.gz
 	mv foundationdb-$(FDB_VERSION) foundationdb
-	cd foundationdb && sed "s:USER_SITE_PATH:$(python3 -m site --user-site):g" ../test/foundationdb.patch | patch -p1
+	cd foundationdb && sed "s:USER_SITE_PATH:$(PYTHON_SITE_PATH):g" ../test/foundationdb.patch | patch -p1
 
 install-foundationdb-pip:
-	pip3 install --user -Iv foundationdb==$(FDB_VERSION)
-	pip3 show foundationdb
+	$(PIP_INSTALL) foundationdb==$(FDB_VERSION)
+	$(if $(findstring uv,$(PIP_INSTALL)),uv pip show foundationdb,pip3 show foundationdb)
 
 run-bindings-test:
 	./test/loop.sh

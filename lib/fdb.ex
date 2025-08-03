@@ -14,7 +14,7 @@ defmodule FDB do
   if any of the network options need to be customized.
   """
   @spec start(integer) :: :ok
-  def start(version \\ 710) do
+  def start(version \\ 730) do
     :ok = select_api_version(version)
     :ok = Network.setup()
     :ok = Network.run()
@@ -23,11 +23,11 @@ defmodule FDB do
   @doc """
   Sets the [API
   version](https://apple.github.io/foundationdb/api-general.html#api-versions). The
-  maximum supported value is `710`.
+  maximum supported value is `730`.
   """
   @spec select_api_version(integer) :: :ok
-  def select_api_version(version \\ 710) do
-    Native.select_api_version_impl(version, 710)
+  def select_api_version(version \\ 730) do
+    Native.select_api_version_impl(version, 730)
     |> Utils.verify_ok()
   end
 end

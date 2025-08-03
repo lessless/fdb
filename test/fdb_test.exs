@@ -36,7 +36,13 @@ defmodule FDBTest do
   end
 
   test "cluster path" do
-    assert_raise(FDB.Error, ~r/file/, fn -> Database.create("/hello/world") end)
+    db = Database.create("/hello/world")
+
+    assert_raise(FDB.Error, ~r/[Nn]o cluster file found/, fn ->
+      Database.transact(db, fn tr ->
+        Transaction.set(tr, "test", "value")
+      end)
+    end)
   end
 
   test "timeout" do

@@ -1,6 +1,10 @@
 
 ## [Unreleased]
 
+## [7.3.69-0] - 03/08/2025
+
+-  Update expectation on how FDB handles invalid cluster paths. It doesn't fail at creation time now, but fail when trying to use the database
+
 ## [7.1.5-0]
 
 ## [6.3.23-0] - 29/01/2022

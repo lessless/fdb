@@ -2,7 +2,7 @@
  * https://apple.github.io/foundationdb/api-c.html
  */
 
-#define FDB_API_VERSION 710
+#define FDB_API_VERSION 730
 
 #include "erl_nif.h"
 #include "foundationdb/fdb_c.h"
