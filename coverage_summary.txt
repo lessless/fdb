@@ -1,0 +1,13 @@
+File 'c_src/fdb_nif.c'
+Lines executed:79.07% of 516
+Branches executed:77.06% of 218
+Taken at least once:44.04% of 218
+No calls
+Creating 'fdb_nif.c.gcov'
+
+File '/opt/homebrew/Cellar/erlang/28.0.2_1/lib/erlang/erts-16.0.2/include/erl_nif_api_funcs.h'
+Lines executed:100.00% of 4
+No branches
+No calls
+Creating 'erl_nif_api_funcs.h.gcov'
+

@@ -19,6 +19,13 @@ defmodule FDB.MixProject do
         plt_add_deps: :transitive,
         ignore_warnings: ".dialyzer_ignore",
         flags: [:unmatched_returns, :race_conditions, :error_handling]
+      ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
       ]
     ]
   end
@@ -39,7 +46,8 @@ defmodule FDB.MixProject do
       {:dialyxir, "~> 1.0.0-rc.2", only: [:dev], runtime: false},
       {:benchee, "~>  1.4.0", only: :dev},
       {:exprof, "~> 0.2.3", only: :dev},
-      {:jason, "~> 1.0", only: :dev}
+      {:jason, "~> 1.0", only: [:dev, :test]},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
