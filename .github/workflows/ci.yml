@@ -57,7 +57,7 @@ jobs:
           pip3 show foundationdb
           ./test/loop.sh
       - name: Restore PLT cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         if: ${{ matrix.dialyzer }}
         id: plt_cache
         with:
