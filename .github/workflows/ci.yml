@@ -11,22 +11,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - elixir: 1.9.4
-            otp: 22.3
-          - elixir: 1.10.4
-            otp: 22.3
-          - elixir: 1.11.4
-            otp: 23.3
-          - elixir: 1.12.3
-            otp: 24.1
+          - elixir: 1.18.4
+            otp: 28.0.2
             bindings_test: true
-          - elixir: 1.13.0
-            otp: 24.1
+            check_warnings: true
+            check_format: true
+            dialyzer: true
+          - elixir: 1.18.4
+            otp: 27.3.4.2
+            bindings_test: true
             check_warnings: true
             check_format: true
             dialyzer: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
