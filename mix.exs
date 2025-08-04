@@ -31,7 +31,7 @@ defmodule FDB.MixProject do
 
   defp deps do
     [
-      {:elixir_make, "~> 0.4", runtime: false},
+      {:elixir_make, "~> 0.9", runtime: false},
       {:sweet_xml, "~> 0.7", runtime: false},
       {:stream_data, "~> 1.2", only: [:test, :dev]},
       {:timex, "~>  3.7", only: :test},
