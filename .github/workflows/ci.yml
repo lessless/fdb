@@ -1,8 +1,16 @@
+name: "PR checks"
+
 env:
   FDB_VERSION: "7.1.5"
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
+        required: false
 jobs:
   linux:
     runs-on: ubuntu-latest
@@ -31,7 +39,7 @@ jobs:
           elixir-version: ${{matrix.elixir}}
       - name: Install
         run: |
-          sudo apt-get install -y build-essential python-dev python3-pip
+          sudo apt-get install -y build-essential python-dev-is-python3 python3-pip
           wget "https://github.com/apple/foundationdb/releases/download/${{ env.FDB_VERSION }}/foundationdb-clients_${{ env.FDB_VERSION }}-1_amd64.deb"
           sudo dpkg -i "foundationdb-clients_${{ env.FDB_VERSION }}-1_amd64.deb"
           wget "https://github.com/apple/foundationdb/releases/download/${{ env.FDB_VERSION }}/foundationdb-server_${{ env.FDB_VERSION }}-1_amd64.deb"
@@ -72,6 +80,13 @@ jobs:
       - name: Run dialyzer
         if: ${{ matrix.dialyzer }}
         run: mix dialyzer
+
+      - name: Setup debugging session
+        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled  }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
   mac:
     runs-on: macos-latest
     name: OS MacOS
@@ -85,5 +100,12 @@ jobs:
           sudo installer  -allowUntrusted -verboseR -pkg "FoundationDB-${{ env.FDB_VERSION }}.pkg" -target /
           mix local.rebar --force
           mix local.hex --force
-      - run: mix deps.get
+      - run: mix deps.get && mix compile
       - run: mix test --trace --include integration
+
+      - name: Setup debugging session
+        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled  }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
