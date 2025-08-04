@@ -1,4 +1,4 @@
-defmodule FDB.Native.ApiTest do
+defmodule FDB.Native.ApiVersionTest do
   use ExUnit.Case, async: false
   import FDB.Native
 

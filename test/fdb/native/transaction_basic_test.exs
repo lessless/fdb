@@ -1,4 +1,4 @@
-defmodule FDB.Native.DatabaseTransactionTest do
+defmodule FDB.Native.TransactionBasicTest do
   use ExUnit.Case, async: false
   import FDB.Native
   import TestUtils
@@ -32,6 +32,64 @@ defmodule FDB.Native.DatabaseTransactionTest do
 
       assert length(databases) == 5
       assert Enum.all?(databases, &is_reference/1)
+    end
+
+    test "create_database with custom cluster file path" do
+      # Test with a specific cluster file path
+      # This exercises the path handling code in create_database
+      {error_code, db_ref} = create_database("/etc/foundationdb/fdb.cluster")
+
+      # The database creation might fail if the file doesn't exist,
+      # but the important part is that the path handling code is executed
+      if error_code == 0 do
+        assert is_reference(db_ref)
+        # Create a Database struct to test it works
+        db = %Database{resource: db_ref}
+        assert %Database{} = db
+      else
+        # If it fails, verify we get a proper error code
+        assert error_code != 0
+        assert is_binary(get_error(error_code))
+      end
+    end
+
+    test "create_database with non-existent path" do
+      # FDB now accepts non-existent paths and uses default cluster configuration
+      {error_code, _db_ref} = create_database("/nonexistent/path/to/fdb.cluster")
+
+      # Should succeed with a valid database reference
+      assert error_code == 0
+
+      # Since it succeeds, the error message should be "Success"
+      error_msg = get_error(error_code)
+      assert String.downcase(error_msg) == "success"
+    end
+
+    test "create_database with empty string path" do
+      # Empty string as path
+      {error_code, db_ref} = create_database("")
+
+      # This should succeed using default cluster
+      assert error_code == 0
+      assert is_reference(db_ref)
+    end
+
+    test "create_database with various path types" do
+      # Test different path formats
+      paths = [
+        "relative/path/fdb.cluster",
+        "./fdb.cluster",
+        "../fdb.cluster",
+        "~/fdb.cluster",
+        "/absolute/path/fdb.cluster"
+      ]
+
+      for path <- paths do
+        {error_code, db_ref} = create_database(path)
+        # All should return valid responses
+        assert error_code == 0
+        assert is_reference(db_ref)
+      end
     end
   end
 

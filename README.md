@@ -236,21 +236,21 @@ Then you can execute the tests with `make run-bindings-test`
 
 ### NIF coverage
 
-The NIF test coverage is derived from Elixir tests with the help of ` -fprofile-arcs -ftest-coverage` flags that tell the compiler to add tracking code to every line/branch.
-That makes the compiler emit `.gcno` (compile-time coverage map) files containing a map of all possible code paths and instrument C code to output `.gcda` (Graph Coverage Data Archive) files recording which paths were actually taken when the code is executed at runtime.
-After that, the gcov tool is used to compare `.gcno` and `.gcda` to compare compile-time data against the runtime data to calculate coverage, which then further can be formatted as HTML with lcov.
+  The NIF test coverage is derived from Elixir tests with the help of ` -fprofile-arcs -ftest-coverage` flags that tell the compiler to add tracking code to every line/branch.
+  That makes the compiler emit `.gcno` (compile-time coverage map) files containing a map of all possible code paths and instrument C code to output `.gcda` (Graph Coverage Data Archive) files recording which paths were actually taken when the code is executed at runtime.
+  After that, the gcov tool is used to compare `.gcno` and `.gcda` to compare compile-time data against the runtime data to calculate coverage, which then further can be formatted as HTML with lcov.
 
-```
-Elixir: Transaction.get(txn, "key")
-   ↓
-C NIF: transaction_get() gets called
-   ↓
-Coverage: Increments counter in .gcda file
-   ↓
-gcov: Compares .gcda (what ran) vs .gcno (what exists)
-   ↓
-Report: "Line 123 executed 5 times" ✓
-        "Line 456 never executed" ✗
-```
+  ```
+  Elixir: Transaction.get(txn, "key")
+    ↓
+  C NIF: transaction_get() gets called
+    ↓
+  Coverage: Increments counter in .gcda file
+    ↓
+  gcov: Compares .gcda (what ran) vs .gcno (what exists)
+    ↓
+  Report: "Line 123 executed 5 times" ✓
+          "Line 456 never executed" ✗
+  ```
 
-Ensure that lcov is installed to get HTML reports (On macOS available via `brew install lcov`).
+  Ensure that lcov is installed to get HTML reports (On macOS available via `brew install lcov`).
