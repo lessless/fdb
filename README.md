@@ -217,3 +217,19 @@ information.
 ## Benchmark
 
 A simple, unreliable and non-scientific benchmark can be found [here](BENCHMARK.md)
+
+## Testing
+
+Aside from conventional Elixir tests there are two Makefile tasks that help
+with esnuring code quality: `run-bindings-test` and `nif_coverage`.
+
+### Bindings tests
+
+The `run-bindings-test` target executes the official FoundationDB binding conformance test suite against the Elixir bindings to ensures that the implementation maintains compatibility with the FoundationDB API.
+It does so  in multiple rounds using FoundationDB's `bindingtester` framework to detect race conditions and and concurrency issues that might only appear intermittently.
+
+Before running the binding tests, you need to:
+- Fetch foundation source with `make fetch-foundation-source`
+- Install the Python FoundationDB package: `make install-foundationdb-pip`. The task supports Python venv's (tested with UV 0.8.3).
+
+Then you can execute the tests with `make run-bindings-test`
