@@ -69,32 +69,29 @@ run-bindings-test:
 
 nif_coverage:
 	@echo "Cleaning coverage files..."
-	@rm -rf cover *.gcda *.gcno *.gcov
+	@rm -rf cover *.gcda *.gcno
 	@mkdir -p cover
 
 	@echo "Building with coverage..."
-	@$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -shared $(LDFLAGS) -o priv/fdb_nif_cov.so c_src/fdb_nif.c
-	@mv priv/fdb_nif.so priv/fdb_nif.so.bak 2>/dev/null || true
-	@cp priv/fdb_nif_cov.so priv/fdb_nif.so
+	@test -f priv/fdb_nif.so && mv priv/fdb_nif.so priv/fdb_nif.so.bak || true
+	@$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -shared $(LDFLAGS) -o priv/fdb_nif.so c_src/fdb_nif.c || \
+		(echo "Build failed"; test -f priv/fdb_nif.so.bak && mv priv/fdb_nif.so.bak priv/fdb_nif.so; exit 1)
 
 	@echo "Running tests..."
-	@mix test test/fdb/native*
+	@mix test test/fdb/native* || \
+		(echo "Tests failed"; test -f priv/fdb_nif.so.bak && mv priv/fdb_nif.so.bak priv/fdb_nif.so; exit 1)
 
 	@echo "Generating coverage report..."
-	@gcov -o priv/fdb_nif_cov.so-fdb_nif.gcda c_src/fdb_nif.c
-	@mv *.gcov cover/
+	@(cd cover && gcov -o ../. ../c_src/fdb_nif.c) || echo "Warning: gcov failed"
 
 	@if command -v lcov >/dev/null 2>&1; then \
 		echo "Generating HTML report..."; \
-		lcov --capture --directory . --output-file cover/coverage.info --rc lcov_branch_coverage=1; \
-		genhtml cover/coverage.info --output-directory cover/html --branch-coverage; \
-		echo "HTML report: cover/html/index.html"; \
+		lcov --capture --directory . --output-file cover/coverage.info --rc lcov_branch_coverage=1 2>/dev/null || echo "Warning: lcov capture failed"; \
+		test -f cover/coverage.info && genhtml cover/coverage.info --output-directory cover/html --branch-coverage 2>/dev/null || echo "Warning: genhtml failed"; \
+		test -d cover/html && echo "HTML report: cover/html/index.html"; \
 	fi
 
-	@echo ""
-	@echo "Coverage: $$(grep "Lines executed:" cover/fdb_nif.c.gcov | grep -oE "[0-9]+\.[0-9]+")%"
+	@test -f priv/fdb_nif.so.bak && mv priv/fdb_nif.so.bak priv/fdb_nif.so || true
+	@rm -f *.gcda *.gcno
 
-	@mv priv/fdb_nif.so.bak priv/fdb_nif.so 2>/dev/null || true
-	@rm -rf priv/fdb_nif_cov.so*
-
-.PHONY: coverage
+.PHONY: nif_coverag
