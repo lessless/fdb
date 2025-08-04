@@ -10,7 +10,7 @@ defmodule FDB.Native.NetworkTest do
   # These tests are designed to run in isolation and may need special
   # handling in the test suite.
 
-  @moduletag :network_lifecycle
+  @moduletag :integration
   @moduletag timeout: 30_000
 
   describe "network lifecycle" do
