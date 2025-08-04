@@ -13,11 +13,13 @@ LDFLAGS += -L/usr/local/lib/ -L/usr/lib/
 ifeq ($(shell uname),Linux)
 	LDFLAGS += -Wl,--no-as-needed
 	LDFLAGS += -lm -lpthread -lrt
+	COVERAGE_FLAGS = -fprofile-arcs -ftest-coverage --coverage -lgcov
 endif
 
 ifeq ($(shell uname),Darwin)
 	LDFLAGS += -dynamiclib -undefined dynamic_lookup
 	LDFLAGS += -rpath /usr/local/lib
+	COVERAGE_FLAGS = -fprofile-arcs -ftest-coverage --coverage
 endif
 
 LDFLAGS += -lfdb_c
@@ -64,3 +66,35 @@ install-foundationdb-pip:
 
 run-bindings-test:
 	./test/loop.sh
+
+nif_coverage:
+	@echo "Cleaning coverage files..."
+	@rm -rf cover *.gcda *.gcno *.gcov
+	@mkdir -p cover
+
+	@echo "Building with coverage..."
+	@$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -shared $(LDFLAGS) -o priv/fdb_nif_cov.so c_src/fdb_nif.c
+	@mv priv/fdb_nif.so priv/fdb_nif.so.bak 2>/dev/null || true
+	@cp priv/fdb_nif_cov.so priv/fdb_nif.so
+
+	@echo "Running tests..."
+	@mix test test/fdb/native*
+
+	@echo "Generating coverage report..."
+	@gcov -o priv/fdb_nif_cov.so-fdb_nif.gcda c_src/fdb_nif.c
+	@mv *.gcov cover/
+
+	@if command -v lcov >/dev/null 2>&1; then \
+		echo "Generating HTML report..."; \
+		lcov --capture --directory . --output-file cover/coverage.info --rc lcov_branch_coverage=1; \
+		genhtml cover/coverage.info --output-directory cover/html --branch-coverage; \
+		echo "HTML report: cover/html/index.html"; \
+	fi
+
+	@echo ""
+	@echo "Coverage: $$(grep "Lines executed:" cover/fdb_nif.c.gcov | grep -oE "[0-9]+\.[0-9]+")%"
+
+	@mv priv/fdb_nif.so.bak priv/fdb_nif.so 2>/dev/null || true
+	@rm -rf priv/fdb_nif_cov.so*
+
+.PHONY: coverage
